@@ -1,5 +1,5 @@
-import tkinter as tk
 from PIL import Image, ImageTk
+import tkinter as tk
 import random
 
 # Konstanta ukuran peta
@@ -14,9 +14,9 @@ T_JUNCTION = 't_junction'
 TURN = 'turn'
 
 # Batas jumlah jenis jalan
-CROSSROAD_LIMIT = 3
-T_JUNCTION_LIMIT = 5
-TURN_LIMIT = 8
+CROSSROAD_LIMIT = 5
+T_JUNCTION_LIMIT = 10
+TURN_LIMIT = 15
 
 # Jarak minimal antara jalan
 MIN_DISTANCE = 5
@@ -26,26 +26,30 @@ BIG_BUILDING = 'big_building'
 MEDIUM_BUILDING = 'medium_building'
 SMALL_BUILDING = 'small_building'
 HOUSE = 'house'
+TREE = 'tree'
 
 BUILDING_SIZES = {
     BIG_BUILDING: (10, 5),
     MEDIUM_BUILDING: (5, 3),
     SMALL_BUILDING: (2, 2),
-    HOUSE: (1, 2)
+    HOUSE: (1, 2),
+    TREE: (1, 1)
 }
 
-BUILDING_COLORS = {
-    BIG_BUILDING: 'red',
-    MEDIUM_BUILDING: 'blue',
-    SMALL_BUILDING: 'green',
-    HOUSE: 'yellow'
+BUILDING_IMAGES = {
+    BIG_BUILDING: 'big_building.png',
+    MEDIUM_BUILDING: 'medium_building.png',
+    SMALL_BUILDING: 'small_building.png',
+    HOUSE: 'house.png',
+    TREE: 'tree.png'
 }
 
 BUILDING_MINIMUMS = {
-    BIG_BUILDING: 6,
-    MEDIUM_BUILDING: 12,
-    SMALL_BUILDING: 20,
-    HOUSE: 20
+    BIG_BUILDING: 20,
+    MEDIUM_BUILDING: 50,
+    SMALL_BUILDING: 80,
+    HOUSE: 200,
+    TREE: 500
 }
 
 class MapGenerator:
@@ -116,6 +120,7 @@ class MapGenerator:
                     turn_count += 1
 
         self.place_buildings()
+        self.place_trees()
 
     def is_location_valid(self, x, y, width=1, height=1):
         for i in range(max(0, x - MIN_DISTANCE), min(self.size, x + width + MIN_DISTANCE)):
@@ -148,6 +153,8 @@ class MapGenerator:
 
     def place_buildings(self):
         for building, minimum in BUILDING_MINIMUMS.items():
+            if building == TREE:
+                continue
             count = 0
             while count < minimum:
                 x = random.randint(0, self.size - BUILDING_SIZES[building][0])
@@ -158,6 +165,15 @@ class MapGenerator:
                             self.map[i][j] = building
                     count += 1
 
+    def place_trees(self):
+        count = 0
+        while count < BUILDING_MINIMUMS[TREE]:
+            x = random.randint(0, self.size - 1)
+            y = random.randint(0, self.size - 1)
+            if self.map[x][y] == EMPTY:
+                self.map[x][y] = TREE
+                count += 1
+
     def is_location_valid_for_building(self, x, y, width, height):
         # Check if any cell in the proposed area is a road or another building
         for i in range(x, x + width):
@@ -166,12 +182,17 @@ class MapGenerator:
                     if self.map[i][j] != EMPTY:
                         return False
         # Check the surrounding cells for roads within 1 cell distance
-        for i in range(x - 1, x + width + 1):
-            for j in range(y - 1, y + height + 1):
-                if i >= 0 and i < self.size and j >= 0 and j < self.size:
-                    if self.map[i][j] in ['vertical_road', 'horizontal_road', CROSSROAD, 'tjunction_up', 'tjunction_down', 'tjunction_left', 'tjunction_right', 'turn_right_up', 'turn_left_up', 'turn_right_down', 'turn_left_down']:
-                        return True
-        return False
+        road_found = False
+        for i in range(max(0, x - 1), min(self.size, x + width + 1)):
+            for j in range(max(0, y - 1), min(self.size, y + height + 1)):
+                if self.map[i][j] in ['vertical_road', 'horizontal_road', CROSSROAD, 'tjunction_up', 'tjunction_down', 'tjunction_left', 'tjunction_right', 'turn_right_up', 'turn_left_up', 'turn_right_down', 'turn_left_down']:
+                    road_found = True
+                # Ensure a minimum distance of 2 cells from other buildings
+                if i in range(x, x + width) and j in range(y, y + height):
+                    continue
+                if self.map[i][j] in BUILDING_SIZES:
+                    return False
+        return road_found
 
     def get_map(self):
         return self.map
@@ -184,17 +205,23 @@ class MapDisplay(tk.Frame):
 
         # Load images
         self.images = {
-            'vertical_road': ImageTk.PhotoImage(Image.open("32px/vertical_road.png")),
-            'horizontal_road': ImageTk.PhotoImage(Image.open("32px/horizontal_road.png")),
-            'crossroad': ImageTk.PhotoImage(Image.open("32px/crossroad.png")),
-            'tjunction_up': ImageTk.PhotoImage(Image.open("32px/tjunction_up.png")),
-            'tjunction_down': ImageTk.PhotoImage(Image.open("32px/tjunction_down.png")),
-            'tjunction_left': ImageTk.PhotoImage(Image.open("32px/tjunction_left.png")),
-            'tjunction_right': ImageTk.PhotoImage(Image.open("32px/tjunction_right.png")),
-            'turn_left_down': ImageTk.PhotoImage(Image.open("32px/turn_left_down.png")),
-            'turn_left_up': ImageTk.PhotoImage(Image.open("32px/turn_left_up.png")),
-            'turn_right_up': ImageTk.PhotoImage(Image.open("32px/turn_right_up.png")),
-            'turn_right_down': ImageTk.PhotoImage(Image.open("32px/turn_right_down.png")),
+            'vertical_road': ImageTk.PhotoImage(Image.open("asset/vertical_road.png")),
+            'horizontal_road': ImageTk.PhotoImage(Image.open("asset/horizontal_road.png")),
+            'crossroad': ImageTk.PhotoImage(Image.open("asset/crossroad.png")),
+            'tjunction_up': ImageTk.PhotoImage(Image.open("asset/tjunction_up.png")),
+            'tjunction_down': ImageTk.PhotoImage(Image.open("asset/tjunction_down.png")),
+            'tjunction_left': ImageTk.PhotoImage(Image.open("asset/tjunction_left.png")),
+            'tjunction_right': ImageTk.PhotoImage(Image.open("asset/tjunction_right.png")),
+            'turn_left_down': ImageTk.PhotoImage(Image.open("asset/turn_left_down.png")),
+            'turn_left_up': ImageTk.PhotoImage(Image.open("asset/turn_left_up.png")),
+            'turn_right_up': ImageTk.PhotoImage(Image.open("asset/turn_right_up.png")),
+            'turn_right_down': ImageTk.PhotoImage(Image.open("asset/turn_right_down.png")),
+            BIG_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[BIG_BUILDING]}")),
+            MEDIUM_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[MEDIUM_BUILDING]}")),
+            SMALL_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[SMALL_BUILDING]}")),
+            HOUSE: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[HOUSE]}")),
+            TREE: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[TREE]}")),
+            'grass': ImageTk.PhotoImage(Image.open("asset/grass.png"))  # Tambahkan gambar rumput
         }
 
         # Frame untuk kanvas peta dan tombol
@@ -230,9 +257,23 @@ class MapDisplay(tk.Frame):
             for j in range(MAP_SIZE):
                 cell_type = self.map_data[i][j]
                 if cell_type in self.images:
-                    self.canvas.create_image(j * CELL_SIZE, i * CELL_SIZE, anchor=tk.NW, image=self.images[cell_type])
-                elif cell_type in BUILDING_COLORS:
-                    self.canvas.create_rectangle(j * CELL_SIZE, i * CELL_SIZE, (j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE, fill=BUILDING_COLORS[cell_type])
+                    if cell_type in BUILDING_SIZES:
+                        building_size = BUILDING_SIZES[cell_type]
+                        if self.is_top_left_of_building(i, j, building_size):
+                            self.canvas.create_image(j * CELL_SIZE, i * CELL_SIZE, anchor=tk.NW, image=self.images[cell_type])
+                    else:
+                        self.canvas.create_image(j * CELL_SIZE, i * CELL_SIZE, anchor=tk.NW, image=self.images[cell_type])
+                else:
+                    self.canvas.create_image(j * CELL_SIZE, i * CELL_SIZE, anchor=tk.NW, image=self.images['grass'])
+
+    def is_top_left_of_building(self, i, j, building_size):
+        if i + building_size[0] <= MAP_SIZE and j + building_size[1] <= MAP_SIZE:
+            for x in range(building_size[0]):
+                for y in range(building_size[1]):
+                    if self.map_data[i + x][j + y] != self.map_data[i][j]:
+                        return False
+            return True
+        return False
 
     def redesign_map(self):
         # Generate new map data
