@@ -30,5 +30,5 @@ This is a Python program to generate and display a random map using the tkinter 
 ## Usage
 Run the script using python:
 ```
-python random_map_generator.py
+python main.py
 ```
