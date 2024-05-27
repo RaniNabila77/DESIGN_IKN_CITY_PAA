@@ -15,6 +15,11 @@ This is a Python program to generate and display a random map using the tkinter 
 + Displays the generated map in a GUI window.
 + Allows the user to regenerate the map with a "Redesign" button.
 
+## Requirements
++ Python 3.x
++ tkinter library (usually included with Python)
++ Pillow library for image handling
+
 ## Installation
 + Clone the repository or download the source code.
 + Install the required Python libraries:
