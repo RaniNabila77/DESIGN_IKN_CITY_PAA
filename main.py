@@ -14,9 +14,9 @@ T_JUNCTION = 't_junction'
 TURN = 'turn'
 
 # Batas jumlah jenis jalan
-CROSSROAD_LIMIT = 5
+CROSSROAD_LIMIT = 8
 T_JUNCTION_LIMIT = 10
-TURN_LIMIT = 15
+TURN_LIMIT = 20
 
 # Jarak minimal antara jalan
 MIN_DISTANCE = 5
@@ -45,10 +45,10 @@ BUILDING_IMAGES = {
 }
 
 BUILDING_MINIMUMS = {
-    BIG_BUILDING: 20,
-    MEDIUM_BUILDING: 50,
-    SMALL_BUILDING: 80,
-    HOUSE: 200,
+    BIG_BUILDING: 50,
+    MEDIUM_BUILDING: 100,
+    SMALL_BUILDING: 250,
+    HOUSE: 500,
     TREE: 500
 }
 
@@ -205,23 +205,23 @@ class MapDisplay(tk.Frame):
 
         # Load images
         self.images = {
-            'vertical_road': ImageTk.PhotoImage(Image.open("asset/vertical_road.png")),
-            'horizontal_road': ImageTk.PhotoImage(Image.open("asset/horizontal_road.png")),
-            'crossroad': ImageTk.PhotoImage(Image.open("asset/crossroad.png")),
-            'tjunction_up': ImageTk.PhotoImage(Image.open("asset/tjunction_up.png")),
-            'tjunction_down': ImageTk.PhotoImage(Image.open("asset/tjunction_down.png")),
-            'tjunction_left': ImageTk.PhotoImage(Image.open("asset/tjunction_left.png")),
-            'tjunction_right': ImageTk.PhotoImage(Image.open("asset/tjunction_right.png")),
-            'turn_left_down': ImageTk.PhotoImage(Image.open("asset/turn_left_down.png")),
-            'turn_left_up': ImageTk.PhotoImage(Image.open("asset/turn_left_up.png")),
-            'turn_right_up': ImageTk.PhotoImage(Image.open("asset/turn_right_up.png")),
-            'turn_right_down': ImageTk.PhotoImage(Image.open("asset/turn_right_down.png")),
-            BIG_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[BIG_BUILDING]}")),
-            MEDIUM_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[MEDIUM_BUILDING]}")),
-            SMALL_BUILDING: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[SMALL_BUILDING]}")),
-            HOUSE: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[HOUSE]}")),
-            TREE: ImageTk.PhotoImage(Image.open(f"asset/{BUILDING_IMAGES[TREE]}")),
-            'grass': ImageTk.PhotoImage(Image.open("asset/grass.png"))  # Tambahkan gambar rumput
+            'vertical_road': ImageTk.PhotoImage(Image.open("32px/vertical_road.png")),
+            'horizontal_road': ImageTk.PhotoImage(Image.open("32px/horizontal_road.png")),
+            'crossroad': ImageTk.PhotoImage(Image.open("32px/crossroad.png")),
+            'tjunction_up': ImageTk.PhotoImage(Image.open("32px/tjunction_up.png")),
+            'tjunction_down': ImageTk.PhotoImage(Image.open("32px/tjunction_down.png")),
+            'tjunction_left': ImageTk.PhotoImage(Image.open("32px/tjunction_left.png")),
+            'tjunction_right': ImageTk.PhotoImage(Image.open("32px/tjunction_right.png")),
+            'turn_left_down': ImageTk.PhotoImage(Image.open("32px/turn_left_down.png")),
+            'turn_left_up': ImageTk.PhotoImage(Image.open("32px/turn_left_up.png")),
+            'turn_right_up': ImageTk.PhotoImage(Image.open("32px/turn_right_up.png")),
+            'turn_right_down': ImageTk.PhotoImage(Image.open("32px/turn_right_down.png")),
+            BIG_BUILDING: ImageTk.PhotoImage(Image.open(f"32px/{BUILDING_IMAGES[BIG_BUILDING]}")),
+            MEDIUM_BUILDING: ImageTk.PhotoImage(Image.open(f"32px/{BUILDING_IMAGES[MEDIUM_BUILDING]}")),
+            SMALL_BUILDING: ImageTk.PhotoImage(Image.open(f"32px/{BUILDING_IMAGES[SMALL_BUILDING]}")),
+            HOUSE: ImageTk.PhotoImage(Image.open(f"32px/{BUILDING_IMAGES[HOUSE]}")),
+            TREE: ImageTk.PhotoImage(Image.open(f"32px/{BUILDING_IMAGES[TREE]}")),
+            'grass': ImageTk.PhotoImage(Image.open("32px/grass.png"))  # Tambahkan gambar rumput
         }
 
         # Frame untuk kanvas peta dan tombol
