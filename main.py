@@ -10,13 +10,19 @@ CELL_SIZE = 32  # Disesuaikan dengan ukuran gambar per cell
 EMPTY = 0
 ROAD = 'road'
 CROSSROAD = 'crossroad'
-T_JUNCTION = 't_junction'
-TURN = 'turn'
+T_JUNCTION_UP = 'tjunction_up'
+T_JUNCTION_DOWN = 'tjunction_down'
+T_JUNCTION_LEFT = 'tjunction_left'
+T_JUNCTION_RIGHT = 'tjunction_right'
+TURN_RIGHT_UP = 'turn_right_up'
+TURN_LEFT_UP = 'turn_left_up'
+TURN_RIGHT_DOWN = 'turn_right_down'
+TURN_LEFT_DOWN = 'turn_left_down'
 
 # Batas jumlah jenis jalan
 CROSSROAD_LIMIT = 8
-T_JUNCTION_LIMIT = 10
-TURN_LIMIT = 20
+T_JUNCTION_LIMIT = 20
+TURN_LIMIT = 30
 
 # Jarak minimal antara jalan
 MIN_DISTANCE = 5
@@ -79,22 +85,22 @@ class MapGenerator:
                 elif t_junction_count < T_JUNCTION_LIMIT:
                     direction = random.choice(['up', 'down', 'left', 'right'])
                     if direction == 'up':
-                        self.map[x][y] = 'tjunction_up'
+                        self.map[x][y] = T_JUNCTION_UP
                         self.extend_road(x, y, 'up')
                         self.extend_road(x, y, 'left')
                         self.extend_road(x, y, 'right')
                     elif direction == 'down':
-                        self.map[x][y] = 'tjunction_down'
+                        self.map[x][y] = T_JUNCTION_DOWN
                         self.extend_road(x, y, 'down')
                         self.extend_road(x, y, 'left')
                         self.extend_road(x, y, 'right')
                     elif direction == 'left':
-                        self.map[x][y] = 'tjunction_left'
+                        self.map[x][y] = T_JUNCTION_LEFT
                         self.extend_road(x, y, 'left')
                         self.extend_road(x, y, 'up')
                         self.extend_road(x, y, 'down')
                     elif direction == 'right':
-                        self.map[x][y] = 'tjunction_right'
+                        self.map[x][y] = T_JUNCTION_RIGHT
                         self.extend_road(x, y, 'right')
                         self.extend_road(x, y, 'up')
                         self.extend_road(x, y, 'down')
@@ -102,19 +108,19 @@ class MapGenerator:
                 elif turn_count < TURN_LIMIT:
                     direction = random.choice(['up-right', 'up-left', 'down-right', 'down-left'])
                     if direction == 'up-right':
-                        self.map[x][y] = 'turn_right_up'
+                        self.map[x][y] = TURN_RIGHT_UP
                         self.extend_road(x, y, 'up')
                         self.extend_road(x, y, 'right')
                     elif direction == 'up-left':
-                        self.map[x][y] = 'turn_left_up'
+                        self.map[x][y] = TURN_LEFT_UP
                         self.extend_road(x, y, 'up')
                         self.extend_road(x, y, 'left')
                     elif direction == 'down-right':
-                        self.map[x][y] = 'turn_right_down'
+                        self.map[x][y] = TURN_RIGHT_DOWN
                         self.extend_road(x, y, 'down')
                         self.extend_road(x, y, 'right')
                     elif direction == 'down-left':
-                        self.map[x][y] = 'turn_left_down'
+                        self.map[x][y] = TURN_LEFT_DOWN
                         self.extend_road(x, y, 'down')
                         self.extend_road(x, y, 'left')
                     turn_count += 1
@@ -151,6 +157,23 @@ class MapGenerator:
                     break
                 self.map[x][j] = 'horizontal_road'
 
+        # Adjust T-junctions at intersections
+        self.adjust_intersections()
+
+    def adjust_intersections(self):
+        for x in range(self.size):
+            for y in range(self.size):
+                if self.map[x][y] == 'vertical_road':
+                    if y > 0 and self.map[x][y-1] == 'horizontal_road':
+                        self.map[x][y] = T_JUNCTION_LEFT
+                    if y < self.size - 1 and self.map[x][y+1] == 'horizontal_road':
+                        self.map[x][y] = T_JUNCTION_RIGHT
+                if self.map[x][y] == 'horizontal_road':
+                    if x > 0 and self.map[x-1][y] == 'vertical_road':
+                        self.map[x][y] = T_JUNCTION_UP
+                    if x < self.size - 1 and self.map[x+1][y] == 'vertical_road':
+                        self.map[x][y] = T_JUNCTION_DOWN
+
     def place_buildings(self):
         for building, minimum in BUILDING_MINIMUMS.items():
             if building == TREE:
@@ -185,7 +208,7 @@ class MapGenerator:
         road_found = False
         for i in range(max(0, x - 1), min(self.size, x + width + 1)):
             for j in range(max(0, y - 1), min(self.size, y + height + 1)):
-                if self.map[i][j] in ['vertical_road', 'horizontal_road', CROSSROAD, 'tjunction_up', 'tjunction_down', 'tjunction_left', 'tjunction_right', 'turn_right_up', 'turn_left_up', 'turn_right_down', 'turn_left_down']:
+                if self.map[i][j] in ['vertical_road', 'horizontal_road', CROSSROAD, T_JUNCTION_UP, T_JUNCTION_DOWN, T_JUNCTION_LEFT, T_JUNCTION_RIGHT, TURN_RIGHT_UP, TURN_LEFT_UP, TURN_RIGHT_DOWN, TURN_LEFT_DOWN]:
                     road_found = True
                 # Ensure a minimum distance of 2 cells from other buildings
                 if i in range(x, x + width) and j in range(y, y + height):
@@ -284,7 +307,7 @@ class MapDisplay(tk.Frame):
 
 def main():
     root = tk.Tk()
-    root.title("Random Map Generator")
+    root.title("DESIGN IKN CITY")
 
     map_generator = MapGenerator(MAP_SIZE)
     map_data = map_generator.get_map()
